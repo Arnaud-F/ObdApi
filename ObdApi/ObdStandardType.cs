@@ -1,0 +1,40 @@
+﻿namespace OBDApi
+{
+    public enum ObdStandardType
+    {
+        Unknown,
+        OBD2ByCarp = 1,
+        OBDByEpa,
+        OBDAndOBD2,
+        OBD1,
+        NotOBDCompliant,
+        EOBD,
+        EOBDAndOBD2,
+        EOBDAndOBD,
+        EOBDOBDAndOBD2,
+        JOBD,
+        JOBDAndOBD2,
+        JOBDAndEOBD,
+        JOBDEOBDAndOBD2,
+        Reserved1,
+        Reserved2,
+        Reserved3,
+        Emd,
+        EmdPlus,
+        HdOBDC,
+        HdOBD,
+        WwhOBD,
+        Reserved4,
+        HdEOBDStage1,
+        HdEOBDStage1N,
+        HdEOBDStage2,
+        HdEOBDStage2N,
+        Reserved5,
+        OBDBr1,
+        OBDBr2,
+        KOBD,
+        IOBD1,
+        IOBD2,
+        HdEOBD4
+    }
+}
