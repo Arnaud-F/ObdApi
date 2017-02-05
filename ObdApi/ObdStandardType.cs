@@ -1,4 +1,4 @@
-﻿namespace OBDApi
+﻿namespace ObdApi
 {
     public enum ObdStandardType
     {

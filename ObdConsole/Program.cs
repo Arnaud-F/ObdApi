@@ -32,14 +32,16 @@ namespace ObdConsole
                 //}
                 //Console.ReadLine();
 
-                var s = new ObdApi.ObdPid(service, 1);
+                var s = new ObdApi.ObdEngine(service);
                 Console.WriteLine();
-                Console.WriteLine(s.EngineRpm);
-                Console.WriteLine(s.ThrottlePosition);
-                Console.WriteLine(s.EngineCoolantTemperature);
-                Console.WriteLine(s.MafAirFlowRate);
-                Console.WriteLine(s.VehicleSpeed);
+                Console.WriteLine(s.Current.EngineRpm);
+                Console.WriteLine(s.Current.ThrottlePosition);
+                Console.WriteLine(s.Current.EngineCoolantTemperature);
+                Console.WriteLine(s.Current.MafAirFlowRate);
+                Console.WriteLine(s.Current.VehicleSpeed);
                 Console.Write(">");
+                var d = s.StoredTroubles.Codes;
+
                 string str = null;
                 while ((str = Console.ReadLine()) != "END")
                 {

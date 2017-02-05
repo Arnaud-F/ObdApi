@@ -1,16 +1,14 @@
 ﻿namespace ObdApi
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using ObdApi.IO;
-    using OBDApi;
 
-    public class ObdPid : INotifyPropertyChanged
+    public class ObdData : INotifyPropertyChanged
     {
-        protected delegate object ObdPidDelegate(ObdPid my, byte pid);
+        protected delegate object ObdPidDelegate(ObdData my, byte pid);
 
         protected static readonly Dictionary<byte, ObdPidDelegate> Pids = new Dictionary<byte, ObdPidDelegate>
         {
@@ -38,11 +36,18 @@
         public event PropertyChangedEventHandler PropertyChanged;
 
         /*internal protected*/
-        public ObdPid(IObdService service, byte mode)
+        public ObdData(IObdService service, byte mode)
         {
             _service = service;
             Mode = mode;
 
+            if (Mode == 2)
+            { // Check if freezed data available, if none, return
+                uint data = _service.QueryUInt32Pid(mode, 0x02) ?? 0;
+                if (data == 0)
+                { return; }
+            }
+            
             // Check supported PIDs
             for (byte i = 0x00; i <= 0xa0; i += 0x20)
             {
@@ -74,7 +79,7 @@
         }
 
 
-        protected Measurement<Int32> _calculatedEngineLoad;
+        protected Measurement<Int32> _calculatedEngineLoad = new Measurement<Int32>(0x04);
         ///<summary>0x04</summary>
         public Measurement<Int32> CalculatedEngineLoad
         {
@@ -82,7 +87,7 @@
             set { CompareAndRaiseChange(ref _calculatedEngineLoad, value, nameof(CalculatedEngineLoad)); }
         }
 
-        protected Measurement<Int32> _engineCoolantTemperature;
+        protected Measurement<Int32> _engineCoolantTemperature = new Measurement<Int32>(0x05);
         /// <summary>0x05</summary>
         public Measurement<Int32> EngineCoolantTemperature
         {
@@ -90,7 +95,7 @@
             set { CompareAndRaiseChange(ref _engineCoolantTemperature, value, nameof(EngineCoolantTemperature)); }
         }
 
-        protected Measurement<Double> _shortTermFuelTrimBank1;
+        protected Measurement<Double> _shortTermFuelTrimBank1 = new Measurement<Double>(0x06);
         /// <summary>0x06</summary>
         public Measurement<Double> ShortTermFuelTrimBank1
         {
@@ -98,7 +103,7 @@
             set { CompareAndRaiseChange(ref _shortTermFuelTrimBank1, value, nameof(ShortTermFuelTrimBank1)); }
         }
 
-        protected Measurement<Double> _longTermFuelTrimBank1;
+        protected Measurement<Double> _longTermFuelTrimBank1 = new Measurement<Double>(0x07);
         ///<summary>0x07</summary>
         public Measurement<Double> LongTermFuelTrimBank1
         {
@@ -106,7 +111,7 @@
             set { CompareAndRaiseChange(ref _longTermFuelTrimBank1, value, nameof(LongTermFuelTrimBank1)); }
         }
 
-        protected Measurement<Double> _shortTermFuelTrimBank2;
+        protected Measurement<Double> _shortTermFuelTrimBank2 = new Measurement<Double>(0x08);
         ///<summary>0x08</summary>
         public Measurement<Double> ShortTermFuelTrimBank2
         {
@@ -114,7 +119,7 @@
             set { CompareAndRaiseChange(ref _shortTermFuelTrimBank2, value, nameof(ShortTermFuelTrimBank2)); }
         }
 
-        protected Measurement<Double> _longTermFuelTrimBank2;
+        protected Measurement<Double> _longTermFuelTrimBank2 = new Measurement<Double>(0x09);
         ///<summary>0x09</summary>
         public Measurement<Double> LongTermFuelTrimBank2
         {
@@ -122,7 +127,7 @@
             set { CompareAndRaiseChange(ref _longTermFuelTrimBank2, value, nameof(LongTermFuelTrimBank2)); }
         }
 
-        protected Measurement<Double> _fuelPressure;
+        protected Measurement<Double> _fuelPressure = new Measurement<Double>(0x0a);
         ///<summary>0x0a/summary>
         public Measurement<Double> FuelPressure
         {
@@ -130,7 +135,7 @@
             set { CompareAndRaiseChange(ref _fuelPressure, value, nameof(FuelPressure)); }
         }
 
-        protected Measurement<Int32> _intakeManifoldAbsolutePressure;
+        protected Measurement<Int32> _intakeManifoldAbsolutePressure = new Measurement<Int32>(0x0b);
         ///<summary>0x0b</summary>
         public Measurement<Int32> IntakeManifoldAbsolutePressure
         {
@@ -138,7 +143,7 @@
             set { CompareAndRaiseChange(ref _intakeManifoldAbsolutePressure, value, nameof(IntakeManifoldAbsolutePressure)); }
         }
 
-        private Measurement<Int32> _engineRpm = null;
+        private Measurement<Int32> _engineRpm = new Measurement<Int32>(0x0c);
         /// <summary>0x0c</summary>
         public Measurement<Int32> EngineRpm
         {
@@ -146,7 +151,7 @@
             private set { CompareAndRaiseChange(ref _engineRpm, value, nameof(EngineRpm)); }
         }
 
-        protected Measurement<Int32> _vehicleSpeed;
+        protected Measurement<Int32> _vehicleSpeed = new Measurement<Int32>(0x0d);
         /// <summary>0x0d</summary>
         public Measurement<Int32> VehicleSpeed
         {
@@ -154,7 +159,7 @@
             set { CompareAndRaiseChange(ref _vehicleSpeed, value, nameof(VehicleSpeed)); }
         }
 
-        protected Measurement<Double> _timingAdvance;
+        protected Measurement<Double> _timingAdvance = new Measurement<Double>(0x0e);
         ///<summary>0x0e</summary>
         public Measurement<Double> TimingAdvance
         {
@@ -162,7 +167,7 @@
             set { CompareAndRaiseChange(ref _timingAdvance, value, nameof(TimingAdvance)); }
         }
 
-        protected Measurement<Int32> _intakeAirTemperature;
+        protected Measurement<Int32> _intakeAirTemperature = new Measurement<Int32>(0x0f);
         ///<summary>0x0f</summary>
         public Measurement<Int32> IntakeAirTemperature
         {
@@ -170,7 +175,7 @@
             set { CompareAndRaiseChange(ref _intakeAirTemperature, value, nameof(IntakeAirTemperature)); }
         }
 
-        protected Measurement<Double> _mafAirFlowRate;
+        protected Measurement<Double> _mafAirFlowRate = new Measurement<Double>(0x10);
         ///<summary>0x10</summary>
         public Measurement<Double> MafAirFlowRate
         {
@@ -178,15 +183,14 @@
             set { CompareAndRaiseChange(ref _mafAirFlowRate, value, nameof(MafAirFlowRate)); }
         }
 
-        protected Measurement<Int32> _throttlePosition;
+        protected Measurement<Int32> _throttlePosition = new Measurement<Int32>(0x11);
         ///<summary>0x11</summary>
         public Measurement<Int32> ThrottlePosition
         {
             get { return _throttlePosition; }
             set { CompareAndRaiseChange(ref _throttlePosition, value, nameof(ThrottlePosition)); }
         }
-
-
+        
         protected ObdStandardType _standardType;
         ///<summary>0x1c</summary>
         public ObdStandardType StandardType
